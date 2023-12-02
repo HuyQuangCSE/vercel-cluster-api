@@ -30,12 +30,12 @@ async def root():
 @app.get("/products/{product_id}")
 async def get_product_list(product_id: int):
     try:
-        cluster = df.loc[df["ProductID"] == product_id, "Cluster"].iloc[0]
+        cluster = df.loc[df["ProductID"] == product_id, "Cluster"].unique()
     except KeyError as exc:
         raise HTTPException(  # pylint: disable=W0707
             status_code=404, detail=f"Product not found, {exc}"
         )
-    return_df = df[df["Cluster"] == cluster].sample(n=20).to_json(orient="records")
+    return_df = df[df["Cluster"].isin(cluster)].sample(n=20).to_json(orient="records")
     response = json.loads(return_df)
     return response
 
